@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User{
+  id  String @id @default(uuid())
+  username String @unique
+  password  String
+  email  String 
+  folder Folder[]
+  file File[]
+  fileCollaborator FileCollaborator[]
+  folderCollaborator FolderCollaborator[]
+}
+
+model Folder{
+  id String @id @default(uuid())
+  title String
+  path String
+  userId String
+  user  User @relation(fields: [userId], references: [id])
+  parentId String?
+  parent Folder? @relation(name:"self_relationship", fields: [parentId], references: [id])
+  childrenFolder Folder[] @relation("self_relationship")
+  childrenFiles File[]
+  shareToken  String? @unique
+  isPublic  Boolean @default(false)
+  expiresAt DateTime?
+  folderCollaborator FolderCollaborator[]
+}
+
+enum fileType{
+  pdf 
+  Video
+  image
+}
+
+model File{
+  id String @id @default(uuid())
+  title String
+  type fileType
+  path String
+  url String
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  parentFolderId String?
+  parent Folder? @relation(fields: [parentFolderId], references: [id])
+  shareToken  String? @unique
+  isPublic  Boolean @default(false)
+  expiresAt DateTime?
+  fileCollaborator FileCollaborator[]
+}
+
+model FileCollaborator {
+  id String @id @default(uuid())
+  fileId String
+  file File @relation(fields: [fileId], references: [id])
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  role String @default("viewer")
+
+  @@unique([fileId, userId])
+}
+
+model FolderCollaborator {
+  id String @id @default(uuid())
+  folderId String
+  folder Folder @relation(fields: [folderId], references: [id])
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  role String @default("viewer")
+
+  @@unique([folderId, userId])
+}

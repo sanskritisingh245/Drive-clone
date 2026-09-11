@@ -40,7 +40,7 @@ export default function UploadImageForm({
 
     try {
       const presignResponse = await fetch(
-        "http://localhost:4000/presign",
+        "/api/presign",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

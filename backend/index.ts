@@ -15,6 +15,7 @@ const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID!;
 const R2_ACCESS_SECRET = process.env.R2_ACCESS_SECRET!;
 const BUCKET_NAME=process.env.BUCKET_NAME!;
 const PUBLIC_URL = "https://pub-6b2475754b47424f87562d56527567e8.r2.dev"
+const BASE_URL = process.env.BASE_URL || "http://localhost:4000";
 
 const S3= new S3Client({
     region:"auto",
@@ -60,7 +61,7 @@ async function shareFile(fileId:string){
             isPublic:true
         }
     });
-    return `http://localhost:4000/share/${token}`
+    return `${BASE_URL}/share/${token}`
 }
 
 async function shareFolder(folderId:string){
@@ -73,7 +74,7 @@ async function shareFolder(folderId:string){
             isPublic:true,
         }
     });
-     return `http://localhost:4000/share/${token}`
+     return `${BASE_URL}/share/${token}`
 
 }
 
